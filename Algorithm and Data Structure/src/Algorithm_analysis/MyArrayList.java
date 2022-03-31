@@ -39,7 +39,7 @@ public class MyArrayList<T> implements List<T> {
 	public boolean add(T element) {
 		// TODO: FILL THIS IN!
 		return false;
-	}
+	} 
 
 	@Override
 	public void add(int index, T element) {
