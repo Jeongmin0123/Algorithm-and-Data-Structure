@@ -6,7 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-
+// 밑에서 MyArrayList<T>나 add(T element) 등에서 T가 의미하는 것은
+// 제네릭 타입으로써 클래스를 설계할 때, 구체적인 타입을 지정하지 않고 사용될 때
+// 구체적인 타입을 지정하면서 사용한다.
 public class MyArrayList<T> implements List<T> {
 	int size;                    // 요소의 개수를 추적함
 	private T[] array;           // 요소를 저장하는 배열
@@ -37,8 +39,16 @@ public class MyArrayList<T> implements List<T> {
 
 	@Override
 	public boolean add(T element) {
-		// TODO: FILL THIS IN!
-		return false;
+		if(size >= array.length) {
+			// 제거 할 수 없는 경고 메시지를 제거한다.
+			@SuppressWarnings("unchecked")
+			T[] bigger = (T[]) new Object[array.length * 2];
+			System.arraycopy(array, 0, bigger, 0, array.length);
+			array = bigger;
+			array[size] = element;
+			size++;
+		}
+		return true;
 	} 
 
 	@Override
@@ -48,14 +58,14 @@ public class MyArrayList<T> implements List<T> {
 			// 배열에 입력될 수 없을 때 나타난다.
 			throw new IndexOutOfBoundsException();
 		}
-		// add the element to get the resizing
+		// element를 추가한다.
 		add(element);
 
-		// shift the elements
+		// 요소들의 위치를 바꾼다.
 		for (int i=size-1; i>index; i--) {
 			array[i] = array[i-1];
 		}
-		// put the new one in the right place
+		// 요소들의 위치를 바꾼 뒤에 원하는 위치에 element를 넣어준다.
 		array[index] = element;
 	}
 
@@ -74,14 +84,14 @@ public class MyArrayList<T> implements List<T> {
 	}
 
 	@Override
+	// 배열을 clear 하는 메서드
 	public void clear() {
-		// note: this version does not actually null out the references
-		// in the array, so it might delay garbage collection.
 		size = 0;
 	}
 
 	@Override
 	public boolean contains(Object obj) {
+		// obj를 포함하는지 안하는지 알려주는 메서드
 		return indexOf(obj) != -1;
 	}
 
@@ -105,7 +115,11 @@ public class MyArrayList<T> implements List<T> {
 
 	@Override
 	public int indexOf(Object target) {
-		// TODO: FILL THIS IN!
+		for(int i = 0 ; i < size ; i++) {
+			if(equals(target, array[i])) {
+				return 1;
+			}
+		}
 		return -1;
 	}
 
@@ -131,15 +145,15 @@ public class MyArrayList<T> implements List<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		// make a copy of the array
+		// 배열의 복사본은 만든다.
 		T[] copy = Arrays.copyOf(array, size);
-		// make a list and return an iterator
+		// Arrays클래스의 내부클래스 ArrayList의 iterator를 반환한다.
 		return Arrays.asList(copy).iterator();
 	}
 
 	@Override
 	public int lastIndexOf(Object target) {
-		// see notes on indexOf
+		// 원하는 숫자의 인덱스 중 가장 큰값을 반환한다.
 		for (int i = size-1; i>=0; i--) {
 			if (equals(target, array[i])) {
 				return i;
@@ -150,17 +164,15 @@ public class MyArrayList<T> implements List<T> {
 
 	@Override
 	public ListIterator<T> listIterator() {
-		// make a copy of the array
+		// 배열을 복사한다.
 		T[] copy = Arrays.copyOf(array, size);
-		// make a list and return an iterator
+		// Arrays클래스의 내부클래스 ArrayList의 listiterator를 반환한다.
 		return Arrays.asList(copy).listIterator();
 	}
 
 	@Override
 	public ListIterator<T> listIterator(int index) {
-		// make a copy of the array
 		T[] copy = Arrays.copyOf(array, size);
-		// make a list and return an iterator
 		return Arrays.asList(copy).listIterator(index);
 	}
 
@@ -175,9 +187,14 @@ public class MyArrayList<T> implements List<T> {
 	}
 
 	@Override
+	// 임의의 index에 있는 값을 뽑아내는 메서드
 	public T remove(int index) {
-		// TODO: FILL THIS IN!
-		return null;
+		T element = get(index);
+		for(int i = index; i < size-1;i++) {
+			array[i] = array[i+1];
+		}
+		size--;
+		return element;
 	}
 
 	@Override
@@ -195,9 +212,11 @@ public class MyArrayList<T> implements List<T> {
 	}
 
 	@Override
+	// index위치에 있는 값을 element로 바꾼 뒤에 원래 있던 값을 반환한다.
 	public T set(int index, T element) {
-		// TODO: FILL THIS IN!
-		return null;
+		T old = get(index);
+		array[index] = element;
+		return old;
 	}
 
 	@Override
