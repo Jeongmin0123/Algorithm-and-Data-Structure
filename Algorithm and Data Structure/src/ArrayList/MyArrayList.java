@@ -1,4 +1,4 @@
-package Algorithm_analysis;
+package ArrayList;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,6 +43,8 @@ public class MyArrayList<T> implements List<T> {
 			// 제거 할 수 없는 경고 메시지를 제거한다.
 			@SuppressWarnings("unchecked")
 			T[] bigger = (T[]) new Object[array.length * 2];
+			// 아래 문장은 쉽게 생각해서 배열의 길이를 늘이는 연산 1번, 복사하는 연산 1번
+			// 총 2번의 평균 연산이 걸린다고 생각하면 된다.
 			System.arraycopy(array, 0, bigger, 0, array.length);
 			array = bigger;
 			array[size] = element;
@@ -52,6 +54,7 @@ public class MyArrayList<T> implements List<T> {
 	} 
 
 	@Override
+	// 반복문이 실행되고 맨 끝의 요소에 추가하는 것이 아니면 아래 메서드는 선형 시간이 걸린다.
 	public void add(int index, T element) {
 		if (index < 0 || index > size) {
 			// IndexOutOfBoundsException()는 배열의 크기를 벗어나거나 index값이 0보다 작은 경우
@@ -104,7 +107,7 @@ public class MyArrayList<T> implements List<T> {
 		}
 		return true;
 	}
-
+	// 상수시간 == O(1)
 	@Override
 	public T get(int index) {
 		if (index < 0 || index >= size) {
@@ -114,6 +117,7 @@ public class MyArrayList<T> implements List<T> {
 	}
 
 	@Override
+	// equal메서드가 상수시간이며 for문은 배열의 크기에 영향을 받으므로 선형 메서드이다.(O(n))
 	public int indexOf(Object target) {
 		for(int i = 0 ; i < size ; i++) {
 			if(equals(target, array[i])) {
@@ -130,6 +134,7 @@ public class MyArrayList<T> implements List<T> {
 	 * @param target
 	 * @param object
 	 */
+	// 상수시간 메서드 for문이 없고 연산은 상수로 취급
 	private boolean equals(Object target, Object element) {
 		if (target == null) {
 			return element == null;
@@ -188,6 +193,8 @@ public class MyArrayList<T> implements List<T> {
 
 	@Override
 	// 임의의 index에 있는 값을 뽑아내는 메서드
+	// for문의 연산횟수가 n과 비례하며, get메서드는 상수시간이므로
+	// O(n)
 	public T remove(int index) {
 		T element = get(index);
 		for(int i = index; i < size-1;i++) {
@@ -200,7 +207,12 @@ public class MyArrayList<T> implements List<T> {
 	@Override
 	public boolean removeAll(Collection<?> collection) {
 		boolean flag = true;
+		// remove 메서드가 선형 메서드이고, 그 메서드가 for문 안에 있어 2차라고 생각하기 쉽지만,
+		// for문의 연산횟수는 obj에 비례한다. 따라서 obj의 개수가 1인 경우에는  선형, 임의의 상수 m인 경우에도 선형,
+		// n과 비례하는 경우는 2차가 된다. 따라서 단순히 for문의 개수가 중요한 것이 아니라
+		// 대상의 크기 또한 중요하다.
 		for (Object obj: collection) {
+			// flag = flag & remove(obj)와 같다. 여기서 &는 비트단위의 논리곱을 의미한다.
 			flag &= remove(obj);
 		}
 		return flag;
@@ -212,6 +224,8 @@ public class MyArrayList<T> implements List<T> {
 	}
 
 	@Override
+	// 상수시간 메서드 == O(1)
+	// get 메서드도 상수시간이고 그것을 제외한 코드들도 다 상수시간이므로
 	// index위치에 있는 값을 element로 바꾼 뒤에 원래 있던 값을 반환한다.
 	public T set(int index, T element) {
 		T old = get(index);
